@@ -3,35 +3,36 @@
 
 using namespace std;
 
-// Функція для введення розміру матриці (без обмежень на розмір)
-void inputMatrixSize(int& M, int& N) {
-    cout << "Enter the number of rows: ";
-    cin >> M;
-    cout << "Enter the number of columns: ";
-    cin >> N;
+// Константи для мінімального та максимального розміру матриці
+const int MIN_SIZE = 1, MAX_SIZE = 20;
 
-    // Перевірка на коректне введення
-    while (M <= 0 || N <= 0) {
-        cout << "Matrix size must be greater than zero. Try again.\n";
-        cout << "Enter the number of rows: ";
+// Функція для введення розміру матриці (кількість рядків та стовпців)
+void inputMatrixSize(int& M, int& N) {
+    do {
+        cout << "Enter the number of rows (from 1 to 20): ";
         cin >> M;
-        cout << "Enter the number of columns: ";
+
+        cout << "Enter the number of columns (from 1 to 20): ";
         cin >> N;
-    }
+
+        // Перевірка, чи введений розмір знаходиться в допустимих межах
+        if (M < MIN_SIZE || M > MAX_SIZE || N < MIN_SIZE || N > MAX_SIZE) {
+            cout << "Error! Matrix size must be between 1 and 20. Try again.\n";
+        }
+    } while (M < MIN_SIZE || M > MAX_SIZE || N < MIN_SIZE || N > MAX_SIZE);
 }
 
 // Функція для введення елементів матриці
 void inputMatrix(vector<vector<int>>& matrix, int M, int N) {
     cout << "Enter the elements of the matrix by rows:" << endl;
-    matrix.resize(M, vector<int>(N)); // Задаємо розмір матриці
     for (int i = 0; i < M; i++) {
         for (int j = 0; j < N; j++) {
-            cin >> matrix[i][j]; // Введення кожного елементу
+            cin >> matrix[i][j];
         }
     }
 }
 
-// Функція для виведення матриці
+// Функція для виведення елементів матриці
 void printMatrix(const vector<vector<int>>& matrix) {
     for (const auto& row : matrix) {
         for (int elem : row) {
@@ -41,17 +42,19 @@ void printMatrix(const vector<vector<int>>& matrix) {
     }
 }
 
-// Завдання 1: Обчислити добуток елементів кожного стовпця
+// Завдання 1: Обчислення добутку елементів кожного стовпця
 void task1() {
     int M, N;
-    inputMatrixSize(M, N); // Введення розміру матриці
-    vector<vector<int>> matrix;
-    inputMatrix(matrix, M, N); // Введення елементів
+    inputMatrixSize(M, N);  // Введення розмірів матриці
 
-    // Ініціалізація вектора добутків (по одному на кожен стовпець)
+    // Створення матриці заданого розміру
+    vector<vector<int>> matrix(M, vector<int>(N));
+    inputMatrix(matrix, M, N);  // Введення елементів
+
+    // Ініціалізація вектора для збереження добутку по кожному стовпцю
     vector<int> column_products(N, 1);
 
-    // Обчислення добутків
+    // Обчислення добутку по кожному стовпцю
     for (int j = 0; j < N; j++) {
         for (int i = 0; i < M; i++) {
             column_products[j] *= matrix[i][j];
@@ -66,21 +69,20 @@ void task1() {
     cout << endl;
 }
 
-// Завдання 2: Дублювати стовпець з мінімальним елементом та вивести оновлену матрицю після початкової
+// Завдання 2: Дублювання стовпця, що містить мінімальний елемент (в кінець)
 void task2() {
     int M, N;
-    inputMatrixSize(M, N); // Введення розміру
-    vector<vector<int>> matrix;
-    inputMatrix(matrix, M, N); // Введення елементів
+    inputMatrixSize(M, N);  // Введення розмірів
 
-    // Виведення початкової матриці
-    cout << "Original matrix:" << endl;
-    printMatrix(matrix);
+    // Створення матриці заданого розміру
+    vector<vector<int>> matrix(M, vector<int>(N));
+    inputMatrix(matrix, M, N);  // Введення елементів
 
-    // Пошук мінімального елементу вручну
+    // Початкове значення мінімального елемента — припустимо перший елемент
     int minElement = matrix[0][0];
     int minColumn = 0;
 
+    // Пошук мінімального елемента та індексу його стовпця
     for (int j = 0; j < N; j++) {
         for (int i = 0; i < M; i++) {
             if (matrix[i][j] < minElement) {
@@ -90,17 +92,17 @@ void task2() {
         }
     }
 
-    // Дублювання стовпця з мінімальним елементом
+    // Додавання дубльованого стовпця у кінець
     for (int i = 0; i < M; i++) {
-        matrix[i].insert(matrix[i].begin() + minColumn + 1, matrix[i][minColumn]);
+        matrix[i].push_back(matrix[i][minColumn]);  // Додаємо значення з мінімального стовпця
     }
 
-    // Виведення матриці після дублювання
-    cout << "Matrix after duplicating the column with the minimum element:" << endl;
+    // Виведення оновленої матриці
+    cout << "Matrix after duplicating the column with the minimum element to the end:" << endl;
     printMatrix(matrix);
 }
 
-// Меню з вибором дій
+// Меню для вибору завдання
 void menu() {
     while (true) {
         int choice;
@@ -111,14 +113,15 @@ void menu() {
         cout << "Choose an option: ";
         cin >> choice;
 
-        if (choice == 3) break; // Вихід з програми
+        // Обробка вибору
+        if (choice == 3) break;
 
         switch (choice) {
         case 1:
-            task1(); // Завдання 1
+            task1();  // Завдання 1
             break;
         case 2:
-            task2(); // Завдання 2
+            task2();  // Завдання 2
             break;
         default:
             cout << "Invalid choice, please try again." << endl;
@@ -128,6 +131,6 @@ void menu() {
 
 // Головна функція
 int main() {
-    menu(); // Запуск меню
+    menu();  // Запуск меню
     return 0;
 }

@@ -4,7 +4,7 @@
 using namespace std;
 
 // Константи для мінімального та максимального розміру матриці
-const int MIN_SIZE = 1, MAX_SIZE = 20;
+const int MIN_SIZE = 2, MAX_SIZE = 20;
 
 // Функція для введення розміру матриці (кількість рядків та стовпців)
 void inputMatrixSize(int& M, int& N) {
